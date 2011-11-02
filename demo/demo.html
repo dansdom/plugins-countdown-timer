@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>countdown timer</title>
+          <!-- Meta tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />  <!-- w3c recomends this meta tag  -->
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />  <!-- w3c recomends this meta tag  -->
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta name="copyright" content="" />
+	<meta name="author" content="" />
+	<meta name="rating" content="general" />
+	<meta name="robots" content="all" />
+        <!-- Stylesheets -->
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection" />
+	    <!-- Javascripts -->
+    <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="js/countdowntimer1.0.min.js"></script>
+    <script>
+		$(document).ready(function(){
+			// make a date to countdown. todays date 10years and 2sec!
+			var currentDate = new Date();
+			var time = (currentDate.getHours()) + "." + (currentDate.getMinutes()) + "." + (currentDate.getSeconds() + 2);
+			var date = (currentDate.getDate()) + "/" + (currentDate.getMonth()) + "/" + (currentDate.getFullYear() + 10);
+			
+			//var date = "2.11.2011";
+			//var time = "15.00.00";
+		
+			$(".timer").countdown({endDate:date,endTime:time});
+		});
+	</script>	
+</head>
+
+<body>
+
+	<div id="wrap">
+      	<h1>Countdown Timer Plugin</h1>	
+      	<div class="timer"></div>
+	</div>  <!-- end of wrap div -->
+      
+</body>
+</html>

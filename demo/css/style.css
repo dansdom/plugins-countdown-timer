@@ -1,0 +1,36 @@
+/* Reset Styles */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,hr,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-size:100%;font-family:inherit;vertical-align:baseline}
+html {height:100%}
+body {min-height:101%;line-height:1;color:black;background:white;font:62.5%/1.4 Arial,Helvetica,sans-serif}
+h1,h2,h3,h4,h5,h6 {font-weight:bold}
+:focus {outline:0}
+ol,ul {list-style:none}
+table {border-collapse:separate;border-spacing:0/* tables still need 'cellspacing="0" */}
+caption,th,td {text-align:left; font-weight:normal}
+blockquote:before,blockquote:after,q:before,q:after {content:""}
+blockquote,q {quotes:"" ""}
+option,select {min-width:1.5em}
+ins {text-decoration:none}
+del {text-decoration:line-through}
+img,a img {border:0}
+h1 {font-size:30px;text-align:center;line-height:5em}
+#wrap {margin:0 auto;background:#fff;padding:50px 0;overflow:visible;width:80%;margin:0 auto;font-size:13px}
+li {font-size:14px;line-height:40px;text-align:center;background:#eee}
+.zero {font-size:14px;line-height:40px;text-align:center;background:url(ticker1.png) 0 -495px;display:block;text-indent:-9000px;}
+.clock > div {width:220px;height:55px;margin:0 5px;border-radius:10px;margin-bottom:100px;}
+.clock > div label {float:right;line-height:55px;display:block;height:55px;padding:0 15px 0 5px;font-weight:bold;width:80px;text-indent:5px;font-size:16px}
+.clock .tens, .clock .ones {box-shadow:3px 3px 5px rgba(0,0,0,0.7);border-radius:7px}
+.clock .tens {margin-right:5px !important}
+.clock ul {}
+.clock ul li {background:url(ticker1.png);text-indent:-9000px}
+.clock ul li.n0 {background-position:0 -495px}
+.clock ul li.n2 {background-position:0 -55px}
+.clock ul li.n3 {background-position:0 -110px}
+.clock ul li.n4 {background-position:0 -165px}
+.clock ul li.n5 {background-position:0 -220px}
+.clock ul li.n6 {background-position:0 -275px}
+.clock ul li.n7 {background-position:0 -330px}
+.clock ul li.n8 {background-position:0 -385px}
+.clock ul li.n9 {background-position:0 -440px}
+
+
