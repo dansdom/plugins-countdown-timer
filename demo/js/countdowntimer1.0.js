@@ -81,13 +81,13 @@
 			// maybe wrap up all the functions that start the clock up into one method that can be called at the end of every minute
 			// every minute maybe reset the clock again. find out how much time is left, set the clock and then put the timer back on
 			// only needed once so putting it on document.focus()
-			//$.fn.countdown.init(clock, opts);
+			$.fn.countdown.init(clock, opts);
 			
 			// set event handling for document blur event so that I can set up the clock again
-			$(document).focus(function(){
+			$(window).focus(function(){
 				clearTimeout(clock.timer);
 				$.fn.countdown.init(clock, opts);
-				console.log("setting up the clock again");
+				//console.log("setting up the clock again");
 			});
 
 			// end of plugin stuff

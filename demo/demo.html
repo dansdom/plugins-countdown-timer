@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection" />
 	    <!-- Javascripts -->
     <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
-    <script language="javascript" type="text/javascript" src="js/countdowntimer1.0.js"></script>
+    <script language="javascript" type="text/javascript" src="js/countdowntimer1.1.js"></script>
     <script>
 		$(document).ready(function(){
 			// make a date to countdown. todays date 10years and 2sec!
@@ -29,6 +29,8 @@
 			//var time = "15.00.00";
 		
 			$(".timer").countdown({endDate:date,endTime:time});
+			
+			//$(".timer2").countdown({endDate:date,endTime:time});
 		});
 	</script>	
 </head>
@@ -37,7 +39,7 @@
 
 	<div id="wrap">
       	<h1>Countdown Timer Plugin</h1>	
-      	<div class="timer"></div>
+      	<div class="timer"></div>      	
 	</div>  <!-- end of wrap div -->
       
 </body>

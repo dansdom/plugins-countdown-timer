@@ -75,19 +75,19 @@
 			clock.days = clock.find(".days");
 			clock.months = clock.find(".months");
 			clock.years = clock.find(".years");
-			console.log("setting clock position");
+			//console.log("setting clock position");
 			// now I can hide those units that I dont want
 			
 			// maybe wrap up all the functions that start the clock up into one method that can be called at the end of every minute
 			// every minute maybe reset the clock again. find out how much time is left, set the clock and then put the timer back on
 			// only needed once so putting it on document.focus()
-			$.fn.countdown.init(clock, opts);
+			//$.fn.countdown.init(clock, opts);
 			
 			// set event handling for document blur event so that I can set up the clock again
 			$(window).focus(function(){
 				clearTimeout(clock.timer);
 				$.fn.countdown.init(clock, opts);
-				//console.log("setting up the clock again");
+				console.log("setting up the clock again");
 			});
 
 			// end of plugin stuff
@@ -132,7 +132,7 @@
 	// make the markup for the clock
 	$.fn.countdown.makeClock = function(clock, opts)
 	{
-		// console.log("countdown.makeClock");
+		//console.log("countdown.makeClock");
 		var digitList = '<div class="digits"><div class="digitWrap"><ul><li class="n0">0</li><li class="n1">1</li><li class="n2">2</li><li class="n3">3</li><li class="n4">4</li><li class="n5">5</li><li class="n6">6</li><li class="n7">7</li><li class="n8">8</li><li class="n9">9</li></ul><div class="zero n0">0</div></div></div>',
 			years = '<div class="years"><div class="tens">' + digitList + '</div><div class="ones">' + digitList + '</div><label>years</label></div>',
 			months = '<div class="months"><div class="tens">' + digitList + '</div><div class="ones">' + digitList + '</div><label>months</label></div>',
@@ -189,7 +189,7 @@
 	// set the position of the clock
 	$.fn.countdown.setClock = function(clock, opts)
 	{
-		// console.log("countdown.setClock");
+		//console.log("countdown.setClock");
 		var clockTime = clock.timeLeft,
 			digit = -opts.digitHeight,
 			tens = ".tens .digits",
@@ -407,12 +407,6 @@
 		// get next position and the animate it
 		counter.secOnes--;
 		if (opts.showSecond) { $.fn.countdown.step(clock.seconds.find(ones), (counter.secOnes * digit), 300); }
-		
-		
-		
-		
-		
-		
 		
 		
 		// this should definately be called at the end of the function. baby come back!
