@@ -84,17 +84,19 @@
 			// only needed once so putting it on document.focus()
 			$.fn.countdown.init(clock, opts);
 			
-			// set event handling for document blur event so that I can set up the clock again
+			// set event handling for document blur event so that I can set up the clock again			
 			$(document).focus(function(){
 				clearTimeout(clock.timer);
 				$.fn.countdown.init(clock, opts);
 				//console.log("setting up the clock again");
+				clock.hasFocus = true;
 			});			
 			
 			$(document).blur(function(){
 				//console.log("the document has blurred");
 				clearTimeout(clock.timer);
-			});
+				clock.hasFocus = false;
+			});			
 
 			// end of plugin stuff
 		});
@@ -429,7 +431,7 @@
 			$.fn.countdown.init(clock, opts);
 			return;		
 		}
-		else
+		else if (clock.hasFocus == true)
 		{	
 			// just run the next animation	
 			clock.timer = setTimeout(function(){$.fn.countdown.timeClock(clock, opts)},1000);
