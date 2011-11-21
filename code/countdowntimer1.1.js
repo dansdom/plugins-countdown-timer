@@ -64,6 +64,7 @@
 			
 			var clock = $(this);
 			clock.timer = 0;	
+			clock.hasFocus = true;
 			
 			// make the markup for the clock
 			$.fn.countdown.makeClock(clock, opts);
@@ -84,13 +85,14 @@
 			$.fn.countdown.init(clock, opts);
 			
 			// set event handling for document blur event so that I can set up the clock again
-			$(window).focus(function(){
+			$(document).focus(function(){
 				clearTimeout(clock.timer);
 				$.fn.countdown.init(clock, opts);
 				//console.log("setting up the clock again");
-			});
+			});			
 			
-			$(window).blur(function(){
+			$(document).blur(function(){
+				//console.log("the document has blurred");
 				clearTimeout(clock.timer);
 			});
 
@@ -272,12 +274,16 @@
 			
 			if (counter.secTens == 0)
 			{
+				// flick on the rest flag
+				clock.resetStatus = true;
+				//console.log("reset status is true");
+					
 				// *** end of the second-tens: set it to the reset position and then test the minute-ones ***
 				counter.secTens = 6;
 				if (opts.showSecond) { clock.seconds.find(tens).css("top",(counter.secTens * digit) + "px"); }
 				
 				if (counter.minOnes == 0)
-				{
+				{					
 					// *** end of the minute-ones: set it to the reset position and then test the minute-tens ***
 					counter.minOnes = 10;
 					if (opts.showMinute) { clock.minutes.find(ones).css("top",(counter.minOnes * digit) + "px"); }
