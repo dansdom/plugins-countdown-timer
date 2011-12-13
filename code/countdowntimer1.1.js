@@ -617,7 +617,7 @@
 	// function that animates the clock!!!!
 	$.fn.countdown.step = function(element, position, time)
 	{
-		element.animate({"top":position+"px"}, time);
+		element.stop().animate({"top":position+"px"}, time);
 	};	
 	
 	// finish the timer
