@@ -23,12 +23,18 @@
 			// make a date to countdown. todays date 10years and 2sec!
 			var currentDate = new Date();
 			var time = (currentDate.getHours()) + "." + (currentDate.getMinutes()) + "." + (currentDate.getSeconds() + 2);
-			var date = (currentDate.getDate()) + "/" + (currentDate.getMonth()) + "/" + (currentDate.getFullYear() + 10);
+			var date = (currentDate.getDate() + 1) + "/" + (currentDate.getMonth() + 1) + "/" + (currentDate.getFullYear());
 			
-			//var date = "2.11.2011";
-			//var time = "15.00.00";
+			var date = "9.2.2012";
+			var time = "13.00.00";
 		
-			$(".timer").countdown({endDate:date,endTime:time});
+			$(".timer").countdown({
+				endDate:date,
+				endTime:time,
+				serverTime:true,
+				currentTime:"10.30.00",
+				currentDate:"9/2/2012"
+			});
 			
 			//$(".timer2").countdown({endDate:date,endTime:time});
 		});

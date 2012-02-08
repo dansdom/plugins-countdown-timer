@@ -59,7 +59,10 @@
 		finishedMessage : "<h1>The time has come!</h1>",
 		digitHeight : 55,
 		digitWidth : 55,
-		timezone : 0				// timezone adjuster	
+		timezone : 0,				// timezone adjuster
+		serverTime : false,			// a flag to use the current time of the server
+		currentTime : null,			// let's the user set the time from the server
+		currentDate : null			// let's the user set the date from the server
 	};
 	
 	// plugin functions go here
@@ -88,6 +91,30 @@
 			//console.log("setting clock position");
 			// now I can hide those units that I dont want
 			
+			// get the finish date
+			this.el.endTime = this.parseDate(this.opts.endTime, this.opts.endDate);
+			// find the adjusted time if the option is set, this will then become the end date of the countdown
+			if (this.opts.serverTime)
+			{
+				// this will need to be compared to a time send from the server and modified accordingly
+				var realTime = this.parseDate(this.opts.currentTime, this.opts.currentDate),
+					timeDiff = this.findTimeDiff(realTime, this.el.endTime),
+					// get the current time
+					timeNow = new Date(),
+					correctedTime;
+					
+				// invert the values so I can find the time left
+				$.each(timeDiff, function(index, value) {
+					timeDiff[index] = -value;
+				});
+				
+				// get the current time and store as an object
+				this.el.currentTime = this.getTime(timeNow);
+				// find the correct time as passes into the plugin
+				correctedTime = this.correctTime(this.el.currentTime, timeDiff);
+				// set the adjusted end time
+				this.el.endTime = correctedTime;
+			}
 			// maybe wrap up all the functions that start the clock up into one method that can be called at the end of every minute
 			// every minute maybe reset the clock again. find out how much time is left, set the clock and then put the timer back on
 			// only needed once so putting it on document.focus()
@@ -116,24 +143,38 @@
 			// stop any timed events
 			clearTimeout(this.el.timer);
 			
-			// get the finish date
-			this.el.endTime = this.getEndDate();
-			
 			// get the current time
-			this.el.currentTime = this.getCurrentTime();
-			//console.log("current time: ");
-			//console.log(clock.currentTime);
+			var timeNow = new Date();
+			this.el.currentTime = this.getTime(timeNow);
+			
 			// define the reset status so I can pass it around?
 			this.el.resetStatus = false;
 				
 			// find the time that has left to run on the clock
-			this.el.timeLeft = this.findTimeLeft();
+			//console.log("finding the time left. end time:");
+			//console.log(this.el.endTime);
+			//console.log("current time");
+			//console.log(this.el.currentTime);
+			this.el.timeLeft = this.findTimeDiff(this.el.currentTime, this.el.endTime);
+			//console.log(this.el.endTime);
+			
+			// maybe this is where I need to test if the clock is done already?
+			if (this.el.timeLeft.year < 0)
+			{
+				//console.log(this.el.timeLeft.year);
+				//console.log("finishing");
+				this.finish();
+				return;
+			}
+			
+			// set the zeros on the clock
+			this.setZeros(this.el.timeLeft, this.el.currentTime);
 				
 			// set the starting position on the clock
 			this.setClock();
 				
 			// start the timer on the clock
-			this.el.timer = setTimeout(function(){clock.timeClock();},1000);
+			this.el.timer = setTimeout(function(){clock.timeClock();}, 1000);
 			
 		},
 		// make the markup for the clock
@@ -180,7 +221,8 @@
 			this.el.html(clockPane);
 			$(".clock > div").css({
 				"float"		: "left",
-				"position"	: "relative"});
+				"position"	: "relative"
+			});
 			$(".zero").css({
 				"height"	: this.opts.digitHeight + "px",
 				"width"		: this.opts.digitWidth + "px",
@@ -189,7 +231,8 @@
 				"z-index"	: "2",
 				"position"	: "absolute",
 				"top"		: "0px",
-				"left"		:"0px"});
+				"left"		:"0px"
+			});
 			$(".tens, .ones").css({
 				"float"		: "left",
 				"position"	: "relative",
@@ -198,21 +241,24 @@
 				"width"		: this.opts.digitWidth + "px",
 				"overflow"	: "hidden",
 				"padding"	: "0px",
-				"margin":"0px"});
+				"margin":"0px"
+			});
 			$(".digitWrap").css("position","relative");
 			$(".tens .digits, .ones .digits").css({
 				"position"	: "absolute",
 				"top"		: "0px",
 				"left"		: "0px",
 				"width"		: this.opts.digitWidth + "px",
-				"z-index"	: "1"});
+				"z-index"	: "1"
+			});
 			$(".tens li, .ones li").css({
 				"display"	: "block",
 				"height"	: this.opts.digitHeight + "px",
 				"width"		: this.opts.digitWidth + "px",
 				"list-style": "none",
 				"padding"	: "0px",
-				"margin"	: "0px"});
+				"margin"	: "0px"
+			});
 			// this line excludes the month number which will be set later
 			$(".ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
 			$(".seconds .tens .zero, .minutes .tens .zero").css("top", (6 * this.opts.digitHeight) + "px");
@@ -233,18 +279,18 @@
 				
 			// console.log(clockTime);
 			// find the digits
-			counter.secOnes = clockTime.seconds%10;
-			counter.secTens = Math.floor(clockTime.seconds/10);
-			counter.minOnes = clockTime.minutes%10;
-			counter.minTens = Math.floor(clockTime.minutes/10);
-			counter.hourOnes = clockTime.hours%10;
-			counter.hourTens = Math.floor(clockTime.hours/10);
-			counter.dayOnes = clockTime.day%10;
-			counter.dayTens = Math.floor(clockTime.day/10);
-			counter.monthOnes = clockTime.month%10;
-			counter.monthTens = Math.floor(clockTime.month/10);
-			counter.yearOnes = clockTime.year%10;
-			counter.yearTens = Math.floor(clockTime.year/10);
+			counter.secOnes = clockTime.seconds % 10;
+			counter.secTens = Math.floor(clockTime.seconds / 10);
+			counter.minOnes = clockTime.minutes % 10;
+			counter.minTens = Math.floor(clockTime.minutes / 10);
+			counter.hourOnes = clockTime.hours % 10;
+			counter.hourTens = Math.floor(clockTime.hours / 10);
+			counter.dayOnes = clockTime.day % 10;
+			counter.dayTens = Math.floor(clockTime.day / 10);
+			counter.monthOnes = clockTime.month % 10;
+			counter.monthTens = Math.floor(clockTime.month / 10);
+			counter.yearOnes = clockTime.year % 10;
+			counter.yearTens = Math.floor(clockTime.year / 10);
 			
 			// console.log("setting the clock hands position");
 			if (this.opts.showSecond)
@@ -294,7 +340,8 @@
 				tens = ".tens .digits"; // for goot code optimisation			
 															
 			// need to optimise the selectors here with the digit objects I have just defined
-			
+			//console.log(counter.hourOnes);
+			//console.log(counter.hourTens);
 			if (counter.secOnes == 0)
 			{	
 				// *** end of second-ones: set it to the reset position and then test second-tens ***
@@ -303,7 +350,7 @@
 				
 				if (counter.secTens == 0)
 				{
-					// flick on the rest flag
+					// flick on the reste flag at the end of every minute so that the clock will keep good time
 					this.el.resetStatus = true;
 					//console.log("reset status is true");
 						
@@ -339,16 +386,19 @@
 										if (counter.dayTens == 0)
 										{
 											// need to go find the number of days in the next month!!!!
-											var nextMonth = this.el.currentTime.month - 1;
-											var nextMonthYear = this.el.currentTime.year;
+											var nextMonth = this.el.currentTime.month - 1,
+												nextMonthYear = this.el.currentTime.year,
+												thisMonthDays;
+												
 											if (nextMonth < 0)
 											{
 												nextMonth = 12;
 												nextMonthYear--;											
 											}
-											var nextMonthDays = this.daysInMonth(nextMonth,nextMonthYear);								
-											counter.dayOnes = nextMonthDays % 10;
-											counter.dayTens = Math.floor(nextMonthDays / 10) + 1;
+											thisMonthDays = this.daysInMonth(this.el.currentTime.month, nextMonthYear);
+											
+											counter.dayOnes = thisMonthDays % 10;
+											counter.dayTens = Math.floor(thisMonthDays / 10) + 1;
 											if (this.opts.showDay)
 											{
 												this.el.days.find(ones).css("top", (counter.dayOnes * digit) + "px");
@@ -407,10 +457,12 @@
 										
 										counter.dayTens--;
 										if (this.opts.showDay) { this.step(this.el.days.find(tens), (counter.dayTens * digit), 600); }
+										
 									}
 									else
 									{
 										counter.dayOnes = 10;
+										if (this.opts.showDay) { this.el.days.find(ones).css("top", (counter.dayOnes * digit) + "px"); }
 									}
 									
 									counter.dayOnes--;
@@ -465,30 +517,33 @@
 			}
 		},
 		// parse and format the end date
-		getEndDate : function()
+		parseDate : function(timeString, dateString)
 		{
-			// console.log("countdown.getEndDate");
 			// I'm going to need to add in the timezone modifier here at some point
 			var timezone = this.opts.timezone,
 				// get the end date of the timer
 				// console.log(opts.dateFormat)	
 				// split spaces, /, and - into an array
 				format = this.opts.dateFormat,
-				finishDate = this.opts.endDate.split(/[\s,\.\-\/]/),
-				finishTime = this.opts.endTime.split(/[\s,\.\-]/),
+				time = timeString.split(/[\s,\.\-]/),
+				date = dateString.split(/[\s,\.\-\/]/),
 				dateObj = {};
+				
+			dateObj.hours = parseInt(time[0]);
+			dateObj.minutes = parseInt(time[1]);
+			dateObj.seconds = parseInt(time[2]);	
 				
 			if (format === "dd/mm/yyyy" || format === "dd-mm-yyyy" || format === "dd mm yyyy" || format === "dd,mm,yyyy" || format === "dd.mm.yyyy")
 			{
-				dateObj.day = parseInt(finishDate[0]);
-				dateObj.month = parseInt(finishDate[1]);
+				dateObj.day = parseInt(date[0]);
+				dateObj.month = parseInt(date[1]);
 			}
 			else if (format === "mm/dd/yyyy" || format === "mm-dd-yyyy" || format === "mm dd yyyy" || format === "mm,dd,yyyy" || format === "mm.dd.yyyy")
 			{
-				dateObj.day = parseInt(finishDate[1]);
-				dateObj.month = parseInt(finishDate[0]);			
+				dateObj.day = parseInt(date[1]);
+				dateObj.month = parseInt(date[0]);			
 			}
-			dateObj.year = parseInt(finishDate[2]);
+			dateObj.year = parseInt(date[2]);
 			//console.log(dateObj);
 			
 			/*
@@ -522,113 +577,218 @@
 			console.log("time: "+dateObj.time);
 			*/
 					
-			dateObj.hours = parseInt(finishTime[0]);
-			dateObj.minutes = parseInt(finishTime[1]);
-			dateObj.seconds = parseInt(finishTime[2]);
 			//console.log(dateObj);
 			return dateObj;
 		},
-		// get the current time and format it
-		getCurrentTime : function()
+		// format a javascript date object into something easier to use
+		getTime : function(date)
 		{
-			// console.log("countdown.getCurrentTime");
-			var time = {},
-				currentTime = new Date();
-				
-			time.year = currentTime.getFullYear();
-			time.month = currentTime.getMonth();
-			time.day = currentTime.getDate();
-			time.hours = currentTime.getHours();
-			time.minutes = currentTime.getMinutes();
-			time.seconds = currentTime.getSeconds();
-			
-			// this is the current time of the browser, not Greenwich meantime so beware!!!	
+			var time = {};
+			time.year = date.getFullYear();
+			time.month = date.getMonth() + 1;
+			time.day = date.getDate();
+			time.hours = date.getHours();
+			time.minutes = date.getMinutes();
+			time.seconds = date.getSeconds();
 			//console.log(time);
 			return time;
 		},
 		// find the time left on the clock
-		findTimeLeft : function()
+		findTimeDiff : function(startTime, endTime)
 		{
-			// console.log("countdown.findTimeLeft");
-			var timeToGo = {},
-				timeCurrent = this.el.currentTime,
-				timeEnd = this.el.endTime;
-			
-			timeToGo.seconds = timeEnd.seconds - timeCurrent.seconds;
+			var timeDiff = {},
+				timeCurrent = $.extend(true, {}, startTime),
+				timeEnd = $.extend(true, {}, endTime);
+				
+			timeDiff.seconds = timeEnd.seconds - timeCurrent.seconds;
 			// dont forget to carry the 1
-			if (timeToGo.seconds < 0)
+			if (timeDiff.seconds < 0)
 			{
-				timeToGo.seconds += 60;
-				timeEnd.minutes--;
+				timeDiff.seconds += 60;
+				timeEnd.minutes -= 1;
 			}
-			timeToGo.minutes = timeEnd.minutes - timeCurrent.minutes;
-			if (timeToGo.minutes < 0)
+			if (timeDiff.seconds > 60)
 			{
-				timeToGo.minutes += 60;
-				timeEnd.hours--;
-			}
-			timeToGo.hours = timeEnd.hours - timeCurrent.hours;
-			if (timeToGo.hours < 0)
-			{
-				timeToGo.hours += 24;
-				timeEnd.day--;
+				timeDiff.seconds -= 60;
+				timeEnd.minutes += 1;
 			}
 			
-			timeToGo.day = timeEnd.day - timeCurrent.day;
+			timeDiff.minutes = timeEnd.minutes - timeCurrent.minutes;
+			if (timeDiff.minutes < 0)
+			{
+				timeDiff.minutes += 60;
+				timeEnd.hours -= 1;
+			}
+			if (timeDiff > 60)
+			{
+				timeDiff.minutes -= 60;
+				timeEnd.hours += 1;
+			}
+			
+			timeDiff.hours = timeEnd.hours - timeCurrent.hours;
+			if (timeDiff.hours < 0)
+			{
+				timeDiff.hours += 24;
+				timeEnd.day -= 1;
+			}
+			if (timeDiff.hours > 24)
+			{
+				timeDiff.hours -= 24;
+				timeEnd.day += 1;
+			}
+			
+			timeDiff.day = timeEnd.day - timeCurrent.day;
 			// replace with just the number of days in this month
 			// 1. find how many days in this month
 			// 2. subtract current date
-			
-			
-			if (timeToGo.day < 0)
-			{
-				// need to get the month and year of the month being tested
-				// console.log("curent year: "+timeCurrent.year+", current month: "+timeCurrent.month);
-				var daysInMonthVar = this.daysInMonth(timeCurrent.month, timeCurrent.year);
-				// console.log("days in month: "+daysInMonthVar);
-				timeToGo.day +=  daysInMonthVar; // days in the current month. something like this - 
-				timeEnd.month--;
+			// need to get the month and year of the month being tested
+			var daysInMonthVar = this.daysInMonth(timeCurrent.month, timeCurrent.year);
+			if (timeDiff.day < 0)
+			{	
+				timeDiff.day +=  daysInMonthVar; // days in the current month. something like this - 
+				timeEnd.month -= 1;
 			}
-			timeToGo.month = timeEnd.month - timeCurrent.month;
-			if (timeToGo.month < 0)
+			if (timeDiff > daysInMonthVar)
 			{
-				timeToGo.month += 12;
-				timeEnd.year--;
+				timeDiff.day -= daysInMonthVar;
+				timeEnd.month += 1;
 			}
-			timeToGo.year = timeEnd.year - timeCurrent.year;
-			//console.log(timeCurrent);
-			//console.log(timer.endTime);
-			// console.log("time left: days: "+timeToGo.day+", months: "+timeToGo.month+", years: "+timeToGo.year+", hours: "+timeToGo.hours+", minutes: "+timeToGo.minutes+", seconds: "+timeToGo.seconds);
+			timeDiff.month = timeEnd.month - timeCurrent.month;
 			
+			if (timeDiff.month < 0)
+			{
+				timeDiff.month += 12;
+				timeEnd.year -= 1;
+			}
+			if (timeDiff.month > 12)
+			{
+				timeDiff.month -= 12;
+				timeEnd.year += 1;
+			}
+			
+			timeDiff.year = timeEnd.year - timeCurrent.year;
+			return timeDiff;
+		},
+		// add two time together to get a new time left
+		correctTime : function(time, timeDiff)
+		{
+			//console.log("time diff:");
+			//console.log(timeDiff);
+			var adjustedTime = {};
+			
+			adjustedTime.seconds = time.seconds - timeDiff.seconds;
+			if (adjustedTime.seconds < 0)
+			{
+				adjustedTime.seconds += 60;
+				time.minutes -= 1;
+			}
+			if (adjustedTime.seconds > 60)
+			{
+				adjustedTime.seconds -= 60;
+				time.minutes += 1;
+			}
+			
+			adjustedTime.minutes = time.minutes - timeDiff.minutes;
+			if (adjustedTime.minutes < 0)
+			{
+				adjustedTime.minutes += 60;
+				time.hours -= 1;
+			}
+			if (adjustedTime.minutes > 60)
+			{
+				adjustedTime.minutes -= 60;
+				time.hours += 1;
+			}
+			
+			adjustedTime.hours = time.hours - timeDiff.hours;
+			if (adjustedTime.hours < 0)
+			{
+				adjustedTime.hours += 23;
+				adjustedTime.day -= 1;
+			}
+			if (adjustedTime.hours > 23)
+			{
+				adjustedTime.hours -= 23;
+				adjustedTime.day += 1;
+			}
+			
+			adjustedTime.day = time.day - timeDiff.day;
+			var daysInMonthVar = this.daysInMonth(time.month, time.year);
+			// find out how many days in this month
+			// do this later
+			if (adjustedTime.day < 0)
+			{
+				adjustedTime.day += daysInMonthVar;
+				adjustedTime.month -= 1;
+			}
+			if (adjustedTime > daysInMonthVar)
+			{
+				adjustedTime.day -= daysInMonthVar;
+				adjustedTime.month += 1;
+			}
+			
+			adjustedTime.month = time.month - timeDiff.month;
+			if (adjustedTime.month < 1)
+			{
+				adjustedTime.month += 12;
+				adjustedTime.year -= 1;
+			}
+			if (adjustedTime.month > 12)
+			{
+				adjustedTime.month -= 12;
+				adjustedTime.year += 1;
+			}
+			
+			adjustedTime.year = time.year - timeDiff.year;
+			
+			//console.log(adjustedTime);
+			return adjustedTime;
+		},
+		// positions the digits in the clock to the correct place
+		setZeros : function(time, startTime)
+		{
+			// if the day is about to turn over then place the zero on the tens into position
+			if (time.hours == 0)
+			{
+				$(".hours .tens .zero").css("top", (3 * this.opts.digitHeight) + "px");
+				$(".hours .ones .zero").css("top", (4 * this.opts.digitHeight) + "px");
+			}
 			// this is where I need to test and position the month ones and day digits if I need to
-			if (timeToGo.month == 0 && this.opts.showMonth)
+			if (time.month == 0 && this.opts.showMonth)
 			{
 				$(".months .ones .zero").css("top", (2 * this.opts.digitHeight) + "px");
 			}
-			if (timeToGo.day == 0)
+			
+			if (time.day == 0)
 			{
 				// find out how many days in the next month and position the day zeros
-				var nextMonth = timeCurrent.month + 1;
-				var theYear = timeCurrent.year;
+				var nextMonth = startTime.month;
+				var theYear = startTime.year;
 				if (nextMonth > 12)
 				{
 					nextMonth = 0;
 					theYear += 1;
 				}
 				
-				var nextMonthDays = this.daysInMonth(nextMonth, theYear);
-				//console.log(nextMonthDays);
-				var dayOnes = (nextMonthDays % 10) + 1,
-					dayTens = Math.floor(nextMonthDays / 10) + 1;
-				//console.log("one: "+dayOnes+", tens: "+dayTens);
+				var monthDays = this.daysInMonth(nextMonth, theYear),
+					dayOnes = (monthDays % 10),
+					dayTens = Math.floor(monthDays / 10) + 1;
 				
 				if (this.opts.showDay)
 				{
-					$(".days .ones .zero").css("top", (dayOnes * this.opts.digitHeight) + "px");
+					// if the days are greater than 10 and less than daysInMonth then set the ones zero to ten
+					if (monthDays > 10)
+					{
+						
+						$(".days .ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
+					}
+					else
+					{
+						$(".days .ones .zero").css("top", (dayOnes * this.opts.digitHeight) + "px");
+					}
 					$(".days .tens .zero").css("top", (dayTens * this.opts.digitHeight) + "px");
 				}
 			}
-			return timeToGo;
 			
 		},
 		// get the number of days in the months

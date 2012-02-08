@@ -14,11 +14,11 @@ ins {text-decoration:none}
 del {text-decoration:line-through}
 img,a img {border:0}
 h1 {font-size:30px;text-align:center;line-height:5em}
-#wrap {margin:0 auto;background:#fff;padding:50px 0;overflow:visible;width:80%;margin:0 auto;font-size:13px}
+#wrap {margin:0 auto;background:#fff;padding:50px 0;overflow:visible;width:100%;margin:0 auto;font-size:13px}
 li {font-size:14px;line-height:40px;text-align:center;background:#eee}
 .zero {font-size:14px;line-height:40px;text-align:center;background:url(ticker1.png) 0 -495px;display:block;text-indent:-9000px;}
-.clock > div {width:220px;height:55px;margin:0 5px;border-radius:10px;margin-bottom:100px;}
-.clock > div label {float:right;line-height:55px;display:block;height:55px;padding:0 15px 0 5px;font-weight:bold;width:80px;text-indent:5px;font-size:16px}
+.clock > div {width:200px;height:55px;margin:0 5px;border-radius:10px;margin-bottom:100px;}
+.clock > div label {float:right;line-height:55px;display:block;height:55px;padding:0 15px 0 5px;font-weight:bold;width:80px;text-indent:5px;font-size:16px;text-align:right}
 .clock .tens, .clock .ones {box-shadow:3px 3px 5px rgba(0,0,0,0.7);border-radius:7px}
 .clock .tens {margin-right:5px !important}
 .clock ul {}
