@@ -219,11 +219,11 @@
 			clockPane += '</div>';
 			// insert the html into the DOM and then style it	
 			this.el.html(clockPane);
-			$(".clock > div").css({
+			this.el.find(".clock > div").css({
 				"float"		: "left",
 				"position"	: "relative"
 			});
-			$(".zero").css({
+			this.el.find(".zero").css({
 				"height"	: this.opts.digitHeight + "px",
 				"width"		: this.opts.digitWidth + "px",
 				"padding"	: "0px",
@@ -233,7 +233,7 @@
 				"top"		: "0px",
 				"left"		:"0px"
 			});
-			$(".tens, .ones").css({
+			this.el.find(".tens, .ones").css({
 				"float"		: "left",
 				"position"	: "relative",
 				"display"	: "block",
@@ -243,15 +243,15 @@
 				"padding"	: "0px",
 				"margin":"0px"
 			});
-			$(".digitWrap").css("position","relative");
-			$(".tens .digits, .ones .digits").css({
+			this.el.find(".digitWrap").css("position","relative");
+			this.el.find(".tens .digits, .ones .digits").css({
 				"position"	: "absolute",
 				"top"		: "0px",
 				"left"		: "0px",
 				"width"		: this.opts.digitWidth + "px",
 				"z-index"	: "1"
 			});
-			$(".tens li, .ones li").css({
+			this.el.find(".tens li, .ones li").css({
 				"display"	: "block",
 				"height"	: this.opts.digitHeight + "px",
 				"width"		: this.opts.digitWidth + "px",
@@ -260,11 +260,11 @@
 				"margin"	: "0px"
 			});
 			// this line excludes the month number which will be set later
-			$(".ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
-			$(".seconds .tens .zero, .minutes .tens .zero").css("top", (6 * this.opts.digitHeight) + "px");
-			$(".hours .tens .zero").css("top", (3 * this.opts.digitHeight) + "px");		
-			$(".months .tens .zero").css("top", (2 * this.opts.digitHeight) + "px");
-			$(".years .tens .zero").css("top", (10 * this.opts.digitHeight) + "px");
+			this.el.find(".ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
+			this.el.find(".seconds .tens .zero, .minutes .tens .zero").css("top", (6 * this.opts.digitHeight) + "px");
+			this.el.find(".hours .tens .zero").css("top", (3 * this.opts.digitHeight) + "px");		
+			this.el.find(".months .tens .zero").css("top", (2 * this.opts.digitHeight) + "px");
+			this.el.find(".years .tens .zero").css("top", (10 * this.opts.digitHeight) + "px");
 		
 		},
 		// set the position of the clock
@@ -750,13 +750,13 @@
 			// if the day is about to turn over then place the zero on the tens into position
 			if (time.hours == 0)
 			{
-				$(".hours .tens .zero").css("top", (3 * this.opts.digitHeight) + "px");
-				$(".hours .ones .zero").css("top", (4 * this.opts.digitHeight) + "px");
+				this.el.find(".hours .tens .zero").css("top", (3 * this.opts.digitHeight) + "px");
+				this.el.find(".hours .ones .zero").css("top", (4 * this.opts.digitHeight) + "px");
 			}
 			// this is where I need to test and position the month ones and day digits if I need to
 			if (time.month == 0 && this.opts.showMonth)
 			{
-				$(".months .ones .zero").css("top", (2 * this.opts.digitHeight) + "px");
+				this.el.find(".months .ones .zero").css("top", (2 * this.opts.digitHeight) + "px");
 			}
 			
 			if (time.day == 0)
@@ -780,13 +780,13 @@
 					if (monthDays > 10)
 					{
 						
-						$(".days .ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
+						this.el.find(".days .ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
 					}
 					else
 					{
-						$(".days .ones .zero").css("top", (dayOnes * this.opts.digitHeight) + "px");
+						this.el.find(".days .ones .zero").css("top", (dayOnes * this.opts.digitHeight) + "px");
 					}
-					$(".days .tens .zero").css("top", (dayTens * this.opts.digitHeight) + "px");
+					this.el.find(".days .tens .zero").css("top", (dayTens * this.opts.digitHeight) + "px");
 				}
 			}
 			
