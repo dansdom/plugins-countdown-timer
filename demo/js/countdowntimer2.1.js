@@ -28,6 +28,7 @@
 // need to add settings to pick what units to show
 // v 1.0 - initial countdown clock build
 // v 2.0 - integration into my new plugin architecture: https://github.com/dansdom/plugins-template-v2
+// v 2.1 - moved the reset flag to every 10 seconds to keep better time, shortened animation time and added finished function
 
 (function ($) {
 	// this ones for you 'uncle' Doug!
@@ -120,6 +121,7 @@
 			// maybe wrap up all the functions that start the clock up into one method that can be called at the end of every minute
 			// every minute maybe reset the clock again. find out how much time is left, set the clock and then put the timer back on
 			// only needed once so putting it on document.focus()
+			console.log(this.el.endTime);
 			this.start();
 			
 			// set event handling for document blur event so that I can set up the clock again			
@@ -278,8 +280,9 @@
 				tens = ".tens .digits",
 				ones = ".ones .digits",
 				counter = {};
-				
-			// console.log(clockTime);
+			
+			//console.log("clockTime:");	
+			//console.log(clockTime);
 			// find the digits
 			counter.secOnes = clockTime.seconds % 10;
 			counter.secTens = Math.floor(clockTime.seconds / 10);
@@ -346,7 +349,7 @@
 			//console.log(counter.hourTens);
 			if (counter.secOnes == 0)
 			{
-				// flick on the reste flag at the end of every 10 seconds so that the clock will keep good time
+				// flick on the reset flag at the end of every 10 seconds so that the clock will keep good time
 				this.el.resetStatus = true;
 				//console.log("reset status is true");
 					
@@ -384,6 +387,8 @@
 									// now check the days one position
 									if (counter.dayOnes == 0)
 									{
+										console.log("dayones = 0");
+										console.log("day tens: "+counter.dayTens);
 										// also check the tens position and infer the next ones positon
 										if (counter.dayTens == 0)
 										{
@@ -398,11 +403,12 @@
 												nextMonthYear--;											
 											}
 											thisMonthDays = this.daysInMonth(this.el.currentTime.month, nextMonthYear);
-											
-											counter.dayOnes = thisMonthDays % 10;
+											console.log("hitting find days");
+											counter.dayOnes = (thisMonthDays % 10) + 1;
 											counter.dayTens = Math.floor(thisMonthDays / 10) + 1;
 											if (this.opts.showDay)
 											{
+												//console.log("counter.dayOnes: "+counter.dayOnes);
 												this.el.days.find(ones).css("top", (counter.dayOnes * digit) + "px");
 												this.el.days.find(tens).css("top", (counter.dayTens * digit) + "px");
 											}
@@ -455,16 +461,18 @@
 											if (this.opts.showMonth) { this.step(this.el.months.find(ones), (counter.monthOnes * digit), 500); }
 											
 										}
+										else
+										{
+											//console.log("hitting the else");
+											counter.dayOnes = 10;
+											if (this.opts.showDay) { this.el.days.find(ones).css("top", (counter.dayOnes * digit) + "px"); }
+										}
 										
 										counter.dayTens--;
 										if (this.opts.showDay) { this.step(this.el.days.find(tens), (counter.dayTens * digit), 500); }
 										
 									}
-									else
-									{
-										counter.dayOnes = 10;
-										if (this.opts.showDay) { this.el.days.find(ones).css("top", (counter.dayOnes * digit) + "px"); }
-									}
+									
 									
 									counter.dayOnes--;
 									if (this.opts.showDay) { this.step(this.el.days.find(ones), (counter.dayOnes * digit), 500); }
@@ -500,7 +508,7 @@
 			counter.secOnes--;
 			if (this.opts.showSecond) { this.step(this.el.seconds.find(ones), (counter.secOnes * digit), 250); }
 			
-			
+			console.log(counter.dayOnes);
 			// this should definately be called at the end of the function. baby come back!
 			// I may have to rip out the animations and put them at the end of the function
 			if (this.el.resetStatus == true)
@@ -682,6 +690,8 @@
 		correctTime : function(time, timeDiff)
 		{
 			//console.log("time diff:");
+			//console.log(time);
+			//console.log(timeDiff);
 			//console.log(timeDiff);
 			var adjustedTime = {};
 			
@@ -713,44 +723,52 @@
 			if (adjustedTime.hours < 0)
 			{
 				adjustedTime.hours += 23;
-				adjustedTime.day -= 1;
+				time.day -= 1;
 			}
 			if (adjustedTime.hours > 23)
 			{
 				adjustedTime.hours -= 23;
-				adjustedTime.day += 1;
+				time.day += 1;
 			}
 			
 			adjustedTime.day = time.day - timeDiff.day;
 			var daysInMonthVar = this.daysInMonth(time.month, time.year);
 			// find out how many days in this month
 			// do this later
+			//console.log("time day: "+time.day+", timeDiff: "+timeDiff.day);
+			//console.log("adjusted: "+adjustedTime.day+", days in month: "+daysInMonthVar);
+			//console.log("adjusted time month: "+adjustedTime.month);
 			if (adjustedTime.day < 0)
 			{
 				adjustedTime.day += daysInMonthVar;
-				adjustedTime.month -= 1;
+				time.month -= 1;
 			}
-			if (adjustedTime > daysInMonthVar)
+			if (adjustedTime.day > daysInMonthVar)
 			{
 				adjustedTime.day -= daysInMonthVar;
-				adjustedTime.month += 1;
+				time.month += 1;
+				console.log("greater");
 			}
+			//console.log("adjusted: "+adjustedTime.day+", days in month: "+daysInMonthVar);
+			
 			
 			adjustedTime.month = time.month - timeDiff.month;
-			if (adjustedTime.month < 1)
+			//console.log("adjustedMonth: "+adjustedTime.month+", time month: "+time.month+", diff month: "+timeDiff.month);
+			if (adjustedTime.month < 0)
 			{
 				adjustedTime.month += 12;
-				adjustedTime.year -= 1;
+				time.year -= 1;
 			}
 			if (adjustedTime.month > 12)
 			{
 				adjustedTime.month -= 12;
-				adjustedTime.year += 1;
+				time.year += 1;
 			}
 			
 			adjustedTime.year = time.year - timeDiff.year;
+			//console.log("adjusted year: "+adjustedTime.year+", time year: "+time.year+", diff year: "+timeDiff.year);
 			
-			//console.log(adjustedTime);
+			console.log(adjustedTime);
 			return adjustedTime;
 		},
 		// positions the digits in the clock to the correct place
@@ -782,13 +800,14 @@
 				var monthDays = this.daysInMonth(nextMonth, theYear),
 					dayOnes = (monthDays % 10),
 					dayTens = Math.floor(monthDays / 10) + 1;
+					
+				//console.log("monthDays: "+monthDays+", dayOnes: "+dayOnes+", dayTens: "+dayTens);
 				
 				if (this.opts.showDay)
 				{
 					// if the days are greater than 10 and less than daysInMonth then set the ones zero to ten
-					if (monthDays > 10)
+					if (monthDays < 10 && monthDays != 0)
 					{
-						
 						this.el.find(".days .ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
 					}
 					else

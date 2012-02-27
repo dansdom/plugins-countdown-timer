@@ -17,23 +17,28 @@
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection" />
 	    <!-- Javascripts -->
     <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
-    <script language="javascript" type="text/javascript" src="js/countdowntimer2.0.js"></script>
+    <script language="javascript" type="text/javascript" src="js/countdowntimer2.1.js"></script>
     <script>
 		$(document).ready(function(){
 			// make a date to countdown. todays date 10years and 2sec!
 			var currentDate = new Date();
 			var time = (currentDate.getHours()) + "." + (currentDate.getMinutes()) + "." + (currentDate.getSeconds() + 2);
-			var date = (currentDate.getDate() + 1) + "/" + (currentDate.getMonth() + 1) + "/" + (currentDate.getFullYear());
+			var date = (currentDate.getDate()) + "/" + (currentDate.getMonth() + 1) + "/" + (currentDate.getFullYear());
 			
-			var date = "9.2.2012";
-			var time = "13.00.00";
+			var date = "19.3.2012";
+			var time = "13.00.02";
+			var currentDate = "9.3.2012";
+			var currentTime = "13.00.00";
 		
 			$(".timer").countdown({
 				endDate:date,
 				endTime:time,
 				serverTime:true,
-				currentTime:"10.30.00",
-				currentDate:"9/2/2012"
+				currentTime:currentTime,
+				currentDate:currentDate,
+				finishedFunction: function() {					
+					$("#wrap h1").html("The end time was: " + date);
+				}
 			});
 			
 			//$(".timer2").countdown({endDate:date,endTime:time});

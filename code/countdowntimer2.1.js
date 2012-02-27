@@ -346,7 +346,7 @@
 			//console.log(counter.hourTens);
 			if (counter.secOnes == 0)
 			{
-				// flick on the reste flag at the end of every 10 seconds so that the clock will keep good time
+				// flick on the reset flag at the end of every 10 seconds so that the clock will keep good time
 				this.el.resetStatus = true;
 				//console.log("reset status is true");
 					
@@ -788,8 +788,7 @@
 					// if the days are greater than 10 and less than daysInMonth then set the ones zero to ten
 					if (monthDays > 10)
 					{
-						
-						this.el.find(".days .ones .zero").css("top", (10 * this.opts.digitHeight) + "px");
+						this.el.find(".days .ones .zero").css("top", (dayOnes * this.opts.digitHeight) + "px");
 					}
 					else
 					{

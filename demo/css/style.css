@@ -19,7 +19,7 @@ li {font-size:14px;line-height:40px;text-align:center;background:#eee}
 .zero {font-size:14px;line-height:40px;text-align:center;background:url(ticker1.png) 0 -495px;display:block;text-indent:-9000px;}
 .clock > div {width:200px;height:55px;margin:0 5px;border-radius:10px;margin-bottom:100px;}
 .clock > div label {float:right;line-height:55px;display:block;height:55px;padding:0 15px 0 5px;font-weight:bold;width:80px;text-indent:5px;font-size:16px;text-align:right}
-.clock .tens, .clock .ones {box-shadow:3px 3px 5px rgba(0,0,0,0.7);border-radius:7px}
+.clock .tens, .clock .ones {box-shadow:10px 10px 10px rgba(0,0,0,0.7);border-radius:7px}
 .clock .tens {margin-right:5px !important}
 .clock ul {}
 .clock ul li {background:url(ticker1.png);text-indent:-9000px}
@@ -33,4 +33,9 @@ li {font-size:14px;line-height:40px;text-align:center;background:#eee}
 .clock ul li.n8 {background-position:0 -385px}
 .clock ul li.n9 {background-position:0 -440px}
 
+
+.days .ones {overflow:visible !important}
+/*
+.months .ones, .months .tens {overflow:visible !important}
+*/
 
