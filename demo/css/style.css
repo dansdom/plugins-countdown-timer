@@ -33,9 +33,3 @@ li {font-size:14px;line-height:40px;text-align:center;background:#eee}
 .clock ul li.n8 {background-position:0 -385px}
 .clock ul li.n9 {background-position:0 -440px}
 
-
-.days .ones {overflow:visible !important}
-/*
-.months .ones, .months .tens {overflow:visible !important}
-*/
-

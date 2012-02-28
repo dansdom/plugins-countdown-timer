@@ -28,7 +28,7 @@
 // need to add settings to pick what units to show
 // v 1.0 - initial countdown clock build
 // v 2.0 - integration into my new plugin architecture: https://github.com/dansdom/plugins-template-v2
-// v 2.1 - moved the reset flag to every 10 seconds to keep better time, shortened animation time and added finished function
+// v 2.1 - moved the reset flag to every 10 seconds to keep better time, shortened animation time and added finished function. also fixed server time calculation bug
 
 (function ($) {
 	// this ones for you 'uncle' Doug!
@@ -121,7 +121,7 @@
 			// maybe wrap up all the functions that start the clock up into one method that can be called at the end of every minute
 			// every minute maybe reset the clock again. find out how much time is left, set the clock and then put the timer back on
 			// only needed once so putting it on document.focus()
-			console.log(this.el.endTime);
+			//console.log(this.el.endTime);
 			this.start();
 			
 			// set event handling for document blur event so that I can set up the clock again			
@@ -387,8 +387,6 @@
 									// now check the days one position
 									if (counter.dayOnes == 0)
 									{
-										console.log("dayones = 0");
-										console.log("day tens: "+counter.dayTens);
 										// also check the tens position and infer the next ones positon
 										if (counter.dayTens == 0)
 										{
@@ -403,7 +401,6 @@
 												nextMonthYear--;											
 											}
 											thisMonthDays = this.daysInMonth(this.el.currentTime.month, nextMonthYear);
-											console.log("hitting find days");
 											counter.dayOnes = (thisMonthDays % 10) + 1;
 											counter.dayTens = Math.floor(thisMonthDays / 10) + 1;
 											if (this.opts.showDay)
@@ -508,7 +505,7 @@
 			counter.secOnes--;
 			if (this.opts.showSecond) { this.step(this.el.seconds.find(ones), (counter.secOnes * digit), 250); }
 			
-			console.log(counter.dayOnes);
+			//console.log(counter.dayOnes);
 			// this should definately be called at the end of the function. baby come back!
 			// I may have to rip out the animations and put them at the end of the function
 			if (this.el.resetStatus == true)
@@ -538,27 +535,27 @@
 				date = dateString.split(/[\s,\.\-\/]/),
 				dateObj = {};
 				
-			dateObj.hours = parseInt(time[0]);
-			dateObj.minutes = parseInt(time[1]);
-			dateObj.seconds = parseInt(time[2]);	
+			dateObj.hours = parseFloat(time[0]);
+			dateObj.minutes = parseFloat(time[1]);
+			dateObj.seconds = parseFloat(time[2]);	
 				
 			if (format === "dd/mm/yyyy" || format === "dd-mm-yyyy" || format === "dd mm yyyy" || format === "dd,mm,yyyy" || format === "dd.mm.yyyy")
 			{
-				dateObj.day = parseInt(date[0]);
-				dateObj.month = parseInt(date[1]);
-				dateObj.year = parseInt(date[2]);
+				dateObj.day = parseFloat(date[0]);
+				dateObj.month = parseFloat(date[1]);
+				dateObj.year = parseFloat(date[2]);
 			}
 			else if (format === "mm/dd/yyyy" || format === "mm-dd-yyyy" || format === "mm dd yyyy" || format === "mm,dd,yyyy" || format === "mm.dd.yyyy")
 			{
-				dateObj.day = parseInt(date[1]);
-				dateObj.month = parseInt(date[0]);
-				dateObj.year = parseInt(date[2]);
+				dateObj.day = parseFloat(date[1]);
+				dateObj.month = parseFloat(date[0]);
+				dateObj.year = parseFloat(date[2]);
 			}
 			else if (format === "yyyy/mm/dd" || format === "yyyy-mm-dd" || format === "yyyy mm dd" || format === "yyyy,mm,dd" || format === "yyyy.mm.dd")
 			{
-				dateObj.day = parseInt(date[2]);
-				dateObj.month = parseInt(date[1]);
-				dateObj.year = parseInt(date[0]);
+				dateObj.day = parseFloat(date[2]);
+				dateObj.month = parseFloat(date[1]);
+				dateObj.year = parseFloat(date[0]);
 			}
 			
 			//console.log(dateObj);
@@ -583,13 +580,13 @@
 			//  ***  here  *** //   
 			if (pm == true)
 			{
-				// do a regex replace of pm, and then do parseInt
-				dateObj.time = parseInt(opts.endTime) + 12;
+				// do a regex replace of pm, and then do parseFloat
+				dateObj.time = parseFloat(opts.endTime) + 12;
 			}
 			else 
 			{
-				// do a regex replace of am, and then do parseInt
-				dateObj.time = parseInt(opts.endTime);
+				// do a regex replace of am, and then do parseFloat
+				dateObj.time = parseFloat(opts.endTime);
 			}
 			console.log("time: "+dateObj.time);
 			*/
@@ -747,7 +744,6 @@
 			{
 				adjustedTime.day -= daysInMonthVar;
 				time.month += 1;
-				console.log("greater");
 			}
 			//console.log("adjusted: "+adjustedTime.day+", days in month: "+daysInMonthVar);
 			
@@ -768,7 +764,7 @@
 			adjustedTime.year = time.year - timeDiff.year;
 			//console.log("adjusted year: "+adjustedTime.year+", time year: "+time.year+", diff year: "+timeDiff.year);
 			
-			console.log(adjustedTime);
+			//console.log(adjustedTime);
 			return adjustedTime;
 		},
 		// positions the digits in the clock to the correct place
