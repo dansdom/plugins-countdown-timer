@@ -44,6 +44,11 @@
 		// extend the settings object with the options, make a 'deep' copy of the object using an empty 'holding' object
 		this.opts = $.extend(true, {}, $.Countdown.settings, options);
 		this.init();
+		// run the callback function if it is defined
+		if (typeof callback === "function")
+		{
+			callback.call();
+		}
 	};
 	
 	// these are the plugin default settings that will be over-written by user settings
@@ -94,35 +99,9 @@
 			//console.log("setting clock position");
 			// now I can hide those units that I dont want
 			
-			// get the finish date
-			this.el.endTime = this.parseDate(this.opts.endTime, this.opts.endDate);
-			// find the adjusted time if the option is set, this will then become the end date of the countdown
-			if (this.opts.serverTime)
-			{
-				// this will need to be compared to a time send from the server and modified accordingly
-				var realTime = this.parseDate(this.opts.currentTime, this.opts.currentDate),
-					timeDiff = this.findTimeDiff(realTime, this.el.endTime),
-					// get the current time
-					timeNow = new Date(),
-					correctedTime;
-					
-				// invert the values so I can find the time left
-				$.each(timeDiff, function(index, value) {
-					timeDiff[index] = -value;
-				});
-				
-				// get the current time and store as an object
-				this.el.currentTime = this.getTime(timeNow);
-				// find the correct time as passes into the plugin
-				correctedTime = this.correctTime(this.el.currentTime, timeDiff);
-				// set the adjusted end time
-				this.el.endTime = correctedTime;
-			}
-			// maybe wrap up all the functions that start the clock up into one method that can be called at the end of every minute
-			// every minute maybe reset the clock again. find out how much time is left, set the clock and then put the timer back on
-			// only needed once so putting it on document.focus()
-			//console.log(this.el.endTime);
-			this.start();
+			// these vars are a bit funny, as I want to expose this function externally
+			// and be able to parse the end time and the server time to the function
+			this.setEndTime(this.opts.endTime, this.opts.endDate, this.opts.currentTime, this.opts.currentDate);
 			
 			// set event handling for document blur event so that I can set up the clock again			
 			$(document).bind('focus.' + clock.namespace, function(){
@@ -155,10 +134,6 @@
 			this.el.resetStatus = false;
 				
 			// find the time that has left to run on the clock
-			//console.log("finding the time left. end time:");
-			//console.log(this.el.endTime);
-			//console.log("current time");
-			//console.log(this.el.currentTime);
 			this.el.timeLeft = this.findTimeDiff(this.el.currentTime, this.el.endTime);
 			//console.log(this.el.endTime);
 			
@@ -531,8 +506,8 @@
 				// console.log(opts.dateFormat)	
 				// split spaces, /, and - into an array
 				format = this.opts.dateFormat,
-				time = timeString.split(/[\s,\.\-]/),
-				date = dateString.split(/[\s,\.\-\/]/),
+				time = timeString.split(/[\s,\.\-:]/),
+				date = dateString.split(/[\s,\.\-\/:]/), 
 				dateObj = {};
 				
 			dateObj.hours = parseFloat(time[0]);
@@ -824,6 +799,37 @@
 		step : function(element, position, time)
 		{
 			element.stop().animate({"top" : position + "px"}, time);
+		},
+		setEndTime : function(clockEndTime, clockEndDate, serverCurrentTime, serverCurrentDate)
+		{
+			// get the finish date
+			this.el.endTime = this.parseDate(clockEndTime, clockEndDate);
+			// find the adjusted time if the option is set, this will then become the end date of the countdown
+			// I need replace this function with a setTime function so that I can call it externally
+			if (this.opts.serverTime)
+			{
+				// this will need to be compared to a time send from the server and modified accordingly
+				var realTime = this.parseDate(serverCurrentTime, serverCurrentDate),
+					timeDiff = this.findTimeDiff(realTime, this.el.endTime),
+					// get the current time
+					timeNow = new Date(),
+					correctedTime;
+					
+				// invert the values so I can find the time left
+				$.each(timeDiff, function(index, value) {
+					timeDiff[index] = -value;
+				});
+				
+				// get the current time and store as an object
+				this.el.currentTime = this.getTime(timeNow);
+				// find the correct time as passes into the plugin
+				correctedTime = this.correctTime(this.el.currentTime, timeDiff);
+				// set the adjusted end time
+				this.el.endTime = correctedTime;
+			}
+			
+			// start the clock now
+			this.start();
 		},
 		// finish the timer. if a function is defined then use that, otherwise just replace the clock with the finished message
 		finish : function()	
